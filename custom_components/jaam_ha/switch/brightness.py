@@ -1,4 +1,4 @@
-"""Brightness switches for jaam_ha: smooth map brightness, display auto brightness, display off at night."""
+"""Brightness switches for jaam_ha: display auto brightness, display off at night."""
 
 from __future__ import annotations
 
@@ -14,13 +14,6 @@ if TYPE_CHECKING:
 
 
 ENTITY_DESCRIPTIONS = (
-    SwitchEntityDescription(
-        key="brightness_smooth",
-        translation_key="brightness_smooth",
-        icon="mdi:sine-wave",
-        entity_category=EntityCategory.CONFIG,
-        has_entity_name=True,
-    ),
     SwitchEntityDescription(
         key="display_auto_brightness",
         translation_key="display_auto_brightness",

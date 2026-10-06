@@ -1,11 +1,10 @@
-"""Shared helpers for brightness entities (map smooth brightness + display brightness).
+"""Shared helpers for brightness entities (map sensor/auto brightness + display brightness).
 
-The firmware (JAAM Fusion with brightness support, e.g. 5.1.2-b3-lux2) sends a `brightness`
+The firmware (JAAM Fusion with brightness support, e.g. 5.1.2-b3-lux4) sends a `brightness`
 object in `initial_state` and in `brightness_change` broadcasts::
 
     {
-        "mode": 0..2,             # 0 - off, 1 - day/night, 2 - light sensor
-        "smooth": bool,           # smooth brightness instead of threshold (sensor mode)
+        "mode": 0..3,             # 0 - off, 1 - day/night, 2 - light sensor (stepped), 3 - auto (smooth)
         "max": 0..100,            # big brightness (bright light)
         "min_day": 0..100,        # small brightness, day hours (darkness)
         "min_night": 0..100,      # small brightness, night hours (darkness)
@@ -32,7 +31,6 @@ BRIGHTNESS_DATA_KEY = "brightness"
 # entity key -> (field in the `brightness` object, requires light sensor)
 BRIGHTNESS_FIELDS: dict[str, tuple[str, bool]] = {
     "brightness_mode": ("mode", False),
-    "brightness_smooth": ("smooth", True),
     "brightness_max": ("max", True),
     "brightness_min_day": ("min_day", True),
     "brightness_min_night": ("min_night", True),
@@ -50,6 +48,7 @@ BRIGHTNESS_MODES: dict[str, int] = {
     "off": 0,
     "day_night": 1,
     "sensor": 2,
+    "auto": 3,
 }
 
 

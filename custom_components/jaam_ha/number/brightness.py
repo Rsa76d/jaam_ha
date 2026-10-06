@@ -1,4 +1,4 @@
-"""Brightness numbers for jaam_ha: map smooth brightness levels, sensor sensitivity, display brightness."""
+"""Brightness numbers for jaam_ha: map brightness levels, sensor sensitivity, display brightness."""
 
 from __future__ import annotations
 

@@ -30,7 +30,7 @@ ENTITY_DESCRIPTIONS = (
 
 
 class JaamHABrightnessModeSelect(SelectEntity, JaamHAEntity):
-    """Brightness mode: off / day-night / light sensor."""
+    """Brightness mode: off / day-night / light sensor (stepped) / auto (smooth)."""
 
     def __init__(
         self,
@@ -50,11 +50,12 @@ class JaamHABrightnessModeSelect(SelectEntity, JaamHAEntity):
 
     @property
     def options(self) -> list[str]:
-        """Return available modes; the sensor mode only when a light sensor is present."""
+        """Return available modes; sensor-based modes only when a light sensor is present."""
         brightness = get_brightness_data(self.coordinator.data) or {}
         options = ["off", "day_night"]
-        if brightness.get("sensor") or brightness.get("mode") == BRIGHTNESS_MODES["sensor"]:
-            options.append("sensor")
+        for option in ("sensor", "auto"):
+            if brightness.get("sensor") or brightness.get("mode") == BRIGHTNESS_MODES[option]:
+                options.append(option)
         return options
 
     @property

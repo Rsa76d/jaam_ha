@@ -869,10 +869,10 @@ class JaamHAApiClient:
 
     async def async_set_brightness(self, key: str, value: bool | float) -> None:
         """
-        Change a brightness setting on device (map smooth brightness or display brightness).
+        Change a brightness setting on device (map brightness or display brightness).
 
         Args:
-            key: Field of the device `brightness` object (mode, smooth, max, min_day,
+            key: Field of the device `brightness` object (mode, max, min_day,
                 min_night, sensitivity, display, display_auto, display_min, display_off_at_night).
             value: New value.
 

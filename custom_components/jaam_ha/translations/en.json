@@ -151,7 +151,8 @@
         "state": {
           "off": "Off",
           "day_night": "Day/Night",
-          "sensor": "Light sensor"
+          "sensor": "Light sensor",
+          "auto": "Auto brightness"
         }
       }
     },
@@ -164,9 +165,6 @@
       },
       "map": {
         "name": "Map"
-      },
-      "brightness_smooth": {
-        "name": "Smooth map brightness"
       },
       "display_auto_brightness": {
         "name": "Display auto brightness"

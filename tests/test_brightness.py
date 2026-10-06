@@ -31,7 +31,7 @@ class FakeJaam:
         self.clients: list[web.WebSocketResponse] = []
         self.received: list[dict[str, Any]] = []
         self.brightness: dict[str, Any] = {
-            "mode": 2, "smooth": True, "max": 80, "min_day": 20, "min_night": 3, "sensitivity": 1.0,
+            "mode": 3, "max": 80, "min_day": 20, "min_night": 3, "sensitivity": 1.0,
             "current": 55, "display": 100, "display_auto": False, "display_min": 10,
             "display_off_at_night": False, "display_current": 100, "sensor": sensor,
         }
@@ -55,7 +55,7 @@ class FakeJaam:
 
     def apply(self, key: str, value: Any) -> None:
         b = self.brightness
-        if key in ("smooth", "display_auto", "display_off_at_night"):
+        if key in ("display_auto", "display_off_at_night"):
             b[key] = bool(value)
         elif key == "sensitivity":
             b[key] = max(0.1, min(30.0, float(value)))
@@ -115,7 +115,7 @@ async def test_brightness_entities_and_controls(hass: HomeAssistant, socket_enab
     expected = {
         "sensor": ["brightness_current", "display_brightness_current"],
         "select": ["brightness_mode"],
-        "switch": ["brightness_smooth", "display_auto_brightness", "display_off_at_night"],
+        "switch": ["display_auto_brightness", "display_off_at_night"],
         "number": ["brightness_max", "brightness_min_day", "brightness_min_night",
                    "light_sensor_sensitivity", "display_brightness", "display_brightness_min"],
     }
@@ -124,8 +124,9 @@ async def test_brightness_entities_and_controls(hass: HomeAssistant, socket_enab
             assert _eid(hass, domain, key), f"{domain}.{key} missing"
 
     assert hass.states.get(_eid(hass, "sensor", "brightness_current")).state == "55"
-    assert hass.states.get(_eid(hass, "select", "brightness_mode")).state == "sensor"
-    assert hass.states.get(_eid(hass, "switch", "brightness_smooth")).state == "on"
+    assert hass.states.get(_eid(hass, "select", "brightness_mode")).state == "auto"
+    assert hass.states.get(_eid(hass, "select", "brightness_mode")).attributes["options"] == ["off", "day_night", "sensor", "auto"]
+    assert _eid(hass, "switch", "brightness_smooth") is None
     assert float(hass.states.get(_eid(hass, "number", "brightness_max")).state) == 80
 
     # "Мала ніч" вище "Малої день" -> прошивка обмежує до 20, HA показує застосоване
@@ -159,6 +160,12 @@ async def test_brightness_entities_and_controls(hass: HomeAssistant, socket_enab
     assert hass.states.get(_eid(hass, "select", "brightness_mode")).state == "day_night"
     assert hass.states.get(_eid(hass, "switch", "display_auto_brightness")).state == "on"
 
+    await hass.services.async_call("select", "select_option",
+                                   {"entity_id": _eid(hass, "select", "brightness_mode"), "option": "auto"}, blocking=True)
+    await _settle(hass)
+    assert {"type": "set_brightness", "key": "mode", "value": 3} in fake.received
+    assert hass.states.get(_eid(hass, "select", "brightness_mode")).state == "auto"
+
     # поточна яскравість оновлюється подією
     fake.brightness["current"] = 33
     await fake.broadcast({"type": "brightness_change", "brightness": dict(fake.brightness)})
@@ -169,10 +176,10 @@ async def test_brightness_entities_and_controls(hass: HomeAssistant, socket_enab
     fake.brightness["sensor"] = False
     await fake.broadcast({"type": "brightness_change", "brightness": dict(fake.brightness)})
     await _settle(hass)
-    assert _eid(hass, "switch", "brightness_smooth") is None
+    assert _eid(hass, "switch", "display_auto_brightness") is None
     assert _eid(hass, "number", "brightness_max") is None
     assert _eid(hass, "number", "display_brightness") is not None
-    assert hass.states.get(_eid(hass, "select", "brightness_mode")).attributes["options"] == ["off", "day_night"]
+    assert hass.states.get(_eid(hass, "select", "brightness_mode")).attributes["options"] == ["off", "day_night", "auto"]  # поточний режим лишається
 
     assert await hass.config_entries.async_unload(entry.entry_id)
     await hass.async_block_till_done()
@@ -214,7 +221,7 @@ async def test_stock_firmware_has_no_brightness_entities(hass: HomeAssistant, so
     entry, _ = await _setup(hass, aiohttp_server, fake)
 
     for domain, key in (("number", "brightness_max"), ("select", "brightness_mode"),
-                        ("switch", "brightness_smooth"), ("sensor", "brightness_current"),
+                        ("switch", "display_auto_brightness"), ("sensor", "brightness_current"),
                         ("sensor", "home_energy"), ("sensor", "home_radiation")):
         assert _eid(hass, domain, key) is None
     # наявні сутності на місці
