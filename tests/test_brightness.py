@@ -49,6 +49,8 @@ class FakeJaam:
         }
         if self.with_brightness:
             state["brightness"] = dict(self.brightness)
+            state["home_energy"] = 4       # не вистачає
+            state["home_radiation"] = 120  # нЗв/год
         return state
 
     def apply(self, key: str, value: Any) -> None:
@@ -176,13 +178,44 @@ async def test_brightness_entities_and_controls(hass: HomeAssistant, socket_enab
     await hass.async_block_till_done()
 
 
+async def test_home_energy_and_radiation(hass: HomeAssistant, socket_enabled, aiohttp_server) -> None:
+    """Energy system status and radiation level of the home region."""
+    fake = FakeJaam()
+    entry, _ = await _setup(hass, aiohttp_server, fake)
+
+    energy = hass.states.get(_eid(hass, "sensor", "home_energy"))
+    radiation = hass.states.get(_eid(hass, "sensor", "home_radiation"))
+    assert energy.state == "insufficient"
+    assert energy.attributes["status_code"] == 4
+    assert radiation.state == "120"
+    assert radiation.attributes["unit_of_measurement"] == "nSv/h"
+    assert radiation.attributes["level"] == "normal"
+
+    await fake.broadcast({"type": "home_energy_radiation_change", "home_energy": 9, "home_radiation": 750})
+    await _settle(hass)
+    assert hass.states.get(_eid(hass, "sensor", "home_energy")).state == "outage"
+    radiation = hass.states.get(_eid(hass, "sensor", "home_radiation"))
+    assert radiation.state == "750"
+    assert radiation.attributes["level"] == "high"
+
+    # немає даних
+    await fake.broadcast({"type": "home_energy_radiation_change", "home_energy": 0, "home_radiation": 0})
+    await _settle(hass)
+    assert hass.states.get(_eid(hass, "sensor", "home_energy")).state == "unknown"
+    assert hass.states.get(_eid(hass, "sensor", "home_radiation")).state == "unknown"
+
+    assert await hass.config_entries.async_unload(entry.entry_id)
+    await hass.async_block_till_done()
+
+
 async def test_stock_firmware_has_no_brightness_entities(hass: HomeAssistant, socket_enabled, aiohttp_server) -> None:
     """With stock firmware (no brightness object) nothing new appears and existing entities work."""
     fake = FakeJaam(with_brightness=False)
     entry, _ = await _setup(hass, aiohttp_server, fake)
 
     for domain, key in (("number", "brightness_max"), ("select", "brightness_mode"),
-                        ("switch", "brightness_smooth"), ("sensor", "brightness_current")):
+                        ("switch", "brightness_smooth"), ("sensor", "brightness_current"),
+                        ("sensor", "home_energy"), ("sensor", "home_radiation")):
         assert _eid(hass, domain, key) is None
     # наявні сутності на місці
     assert _eid(hass, "switch", "night_mode") is not None

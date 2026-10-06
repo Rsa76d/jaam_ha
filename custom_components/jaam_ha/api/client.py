@@ -436,6 +436,12 @@ class JaamHAApiClient:
         if "display_enabled" in data:
             device_data["display"] = data["display_enabled"]
 
+        # Home region energy system status / radiation (firmware with support)
+        if "home_energy" in data:
+            device_data["home_energy"] = data["home_energy"]
+        if "home_radiation" in data:
+            device_data["home_radiation"] = data["home_radiation"]
+
         # Brightness settings/state (firmware with brightness support)
         if isinstance(data.get("brightness"), dict):
             device_data["brightness"] = dict(data["brightness"])
@@ -653,6 +659,13 @@ class JaamHAApiClient:
             elif msg_type == "display_enabled_change":
                 if self._data and "display_enabled" in data:
                     self._data["display"] = data["display_enabled"]
+
+            elif msg_type == "home_energy_radiation_change":
+                if self._data:
+                    if "home_energy" in data:
+                        self._data["home_energy"] = data["home_energy"]
+                    if "home_radiation" in data:
+                        self._data["home_radiation"] = data["home_radiation"]
 
             elif msg_type == "brightness_change":
                 if self._data and isinstance(data.get("brightness"), dict):

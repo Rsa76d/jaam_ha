@@ -208,6 +208,35 @@
       },
       "display_brightness_current": {
         "name": "Current display brightness"
+      },
+      "home_energy": {
+        "name": "Energy system status",
+        "state": {
+          "sufficient": "Sufficient",
+          "insufficient": "Insufficient",
+          "significant_shortage": "Significant shortage",
+          "outage": "Outage",
+          "unknown": "Unknown"
+        },
+        "state_attributes": {
+          "status_code": {
+            "name": "Status code"
+          }
+        }
+      },
+      "home_radiation": {
+        "name": "Radiation level",
+        "state_attributes": {
+          "level": {
+            "name": "Level",
+            "state": {
+              "normal": "Normal",
+              "elevated": "Elevated",
+              "high": "Above normal",
+              "very_high": "Significantly above normal"
+            }
+          }
+        }
       }
     },
     "update": {

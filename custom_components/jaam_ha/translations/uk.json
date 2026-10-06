@@ -208,6 +208,35 @@
       },
       "display_brightness_current": {
         "name": "Поточна яскравість дисплея"
+      },
+      "home_energy": {
+        "name": "Стан енергосистеми",
+        "state": {
+          "sufficient": "Достатньо",
+          "insufficient": "Не вистачає",
+          "significant_shortage": "Значно не вистачає",
+          "outage": "Відключення",
+          "unknown": "Невідомо"
+        },
+        "state_attributes": {
+          "status_code": {
+            "name": "Код статусу"
+          }
+        }
+      },
+      "home_radiation": {
+        "name": "Рівень радіації",
+        "state_attributes": {
+          "level": {
+            "name": "Рівень",
+            "state": {
+              "normal": "В межах норми",
+              "elevated": "Підвищений",
+              "high": "Вище норми",
+              "very_high": "Суттєво вище норми"
+            }
+          }
+        }
       }
     },
     "update": {

@@ -10,6 +10,7 @@ from custom_components.jaam_ha.entity import async_setup_dynamic_entities
 from homeassistant.components.sensor import SensorEntityDescription
 
 from .brightness import ENTITY_DESCRIPTIONS as BRIGHTNESS_DESCRIPTIONS, JaamHABrightnessSensor
+from .home_energy_radiation import ENTITY_DESCRIPTIONS as ENERGY_RADIATION_DESCRIPTIONS, JaamHAHomeEnergyRadiationSensor
 from .home_climate import ENTITY_DESCRIPTIONS as HOME_CLIMATE_DESCRIPTIONS, JaamHAHomeClimateSensor
 from .home_district import ENTITY_DESCRIPTIONS as HOME_DISTRICT_DESCRIPTIONS, JaamHAHomeDistrictSensor
 from .home_district_temp import ENTITY_DESCRIPTIONS as HOME_DISTRICT_TEMP_DESCRIPTIONS, JaamHAHomeDistrictTempSensor
@@ -130,4 +131,17 @@ async def async_setup_entry(
         domain="sensor",
         dynamic_descriptions={desc.key: (desc, JaamHABrightnessSensor) for desc in BRIGHTNESS_DESCRIPTIONS},
         should_create=is_brightness_entity_supported,
+    )
+
+    # Home region energy system / radiation - only with firmware that reports them
+    async_setup_dynamic_entities(
+        hass,
+        entry,
+        coordinator,
+        async_add_entities,
+        domain="sensor",
+        dynamic_descriptions={
+            desc.key: (desc, JaamHAHomeEnergyRadiationSensor) for desc in ENERGY_RADIATION_DESCRIPTIONS
+        },
+        should_create=lambda key, data: key in data,
     )
