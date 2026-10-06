@@ -145,6 +145,14 @@
           "microclimate": "Мікроклімат",
           "combined": "Комбінований"
         }
+      },
+      "brightness_mode": {
+        "name": "Режим яскравості",
+        "state": {
+          "off": "Вимкнено",
+          "day_night": "День/Ніч",
+          "sensor": "Сенсор освітлення"
+        }
       }
     },
     "switch": {
@@ -156,6 +164,15 @@
       },
       "map": {
         "name": "Мапа"
+      },
+      "brightness_smooth": {
+        "name": "Плавна яскравість мапи"
+      },
+      "display_auto_brightness": {
+        "name": "Автояскравість дисплея"
+      },
+      "display_off_at_night": {
+        "name": "Вимикати дисплей вночі"
       }
     },
     "sensor": {
@@ -185,11 +202,37 @@
       },
       "light_level": {
         "name": "Рівень освітлення"
+      },
+      "brightness_current": {
+        "name": "Поточна яскравість мапи"
+      },
+      "display_brightness_current": {
+        "name": "Поточна яскравість дисплея"
       }
     },
     "update": {
       "firmware": {
         "name": "Прошивка"
+      }
+    },
+    "number": {
+      "brightness_max": {
+        "name": "Велика яскравість"
+      },
+      "brightness_min_day": {
+        "name": "Мала яскравість день"
+      },
+      "brightness_min_night": {
+        "name": "Мала яскравість ніч"
+      },
+      "light_sensor_sensitivity": {
+        "name": "Чутливість сенсора освітлення"
+      },
+      "display_brightness": {
+        "name": "Яскравість дисплея"
+      },
+      "display_brightness_min": {
+        "name": "Мінімальна яскравість дисплея"
       }
     }
   },

@@ -436,6 +436,10 @@ class JaamHAApiClient:
         if "display_enabled" in data:
             device_data["display"] = data["display_enabled"]
 
+        # Brightness settings/state (firmware with brightness support)
+        if isinstance(data.get("brightness"), dict):
+            device_data["brightness"] = dict(data["brightness"])
+
         LOGGER.info(
             "Parsed device data - chip_id: %s, fw_version: %s",
             device_data.get("chip_id"),
@@ -650,6 +654,10 @@ class JaamHAApiClient:
                 if self._data and "display_enabled" in data:
                     self._data["display"] = data["display_enabled"]
 
+            elif msg_type == "brightness_change":
+                if self._data and isinstance(data.get("brightness"), dict):
+                    self._data["brightness"] = dict(data["brightness"])
+
             elif msg_type == "button_event":
                 # Handle button event: {"type": "button_event", "buttonId": 1, "event": "click"}
                 # Add timestamp to make each event unique (allows same button to trigger multiple times)
@@ -842,6 +850,27 @@ class JaamHAApiClient:
         command = {
             "type": "set_display_enabled",
             "enabled": enabled,
+        }
+
+        await self._send_command(command)
+
+    async def async_set_brightness(self, key: str, value: bool | float) -> None:
+        """
+        Change a brightness setting on device (map smooth brightness or display brightness).
+
+        Args:
+            key: Field of the device `brightness` object (mode, smooth, max, min_day,
+                min_night, sensitivity, display, display_auto, display_min, display_off_at_night).
+            value: New value.
+
+        Raises:
+            JaamHAApiClientCommunicationError: If command fails.
+
+        """
+        command = {
+            "type": "set_brightness",
+            "key": key,
+            "value": value,
         }
 
         await self._send_command(command)

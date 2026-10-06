@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from custom_components.jaam_ha.brightness import is_brightness_entity_supported
 from custom_components.jaam_ha.const import PARALLEL_UPDATES as PARALLEL_UPDATES, SUPPORTED_SWITCH_MAPPING
 from custom_components.jaam_ha.entity import async_setup_dynamic_entities
 from homeassistant.components.switch import SwitchEntityDescription
 
+from .brightness import ENTITY_DESCRIPTIONS as BRIGHTNESS_DESCRIPTIONS, JaamHABrightnessSwitch
 from .display import ENTITY_DESCRIPTIONS as DISPLAY_DESCRIPTIONS, JaamHADisplaySwitch
 from .map import ENTITY_DESCRIPTIONS as MAP_DESCRIPTIONS, JaamHAMapSwitch
 from .night_mode import ENTITY_DESCRIPTIONS as NIGHT_MODE_DESCRIPTIONS, JaamHANightModeSwitch
@@ -82,4 +84,15 @@ async def async_setup_entry(
         dynamic_descriptions=DYNAMIC_SWITCH_DESCRIPTIONS,
         should_create=_should_create_switch,
         should_remove=_should_remove_switch,
+    )
+
+    # Brightness switches - only with firmware brightness support
+    async_setup_dynamic_entities(
+        hass,
+        entry,
+        entry.runtime_data.coordinator,
+        async_add_entities,
+        domain="switch",
+        dynamic_descriptions={desc.key: (desc, JaamHABrightnessSwitch) for desc in BRIGHTNESS_DESCRIPTIONS},
+        should_create=is_brightness_entity_supported,
     )

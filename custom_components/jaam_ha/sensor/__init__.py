@@ -4,10 +4,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from custom_components.jaam_ha.brightness import is_brightness_entity_supported
 from custom_components.jaam_ha.const import PARALLEL_UPDATES as PARALLEL_UPDATES
 from custom_components.jaam_ha.entity import async_setup_dynamic_entities
 from homeassistant.components.sensor import SensorEntityDescription
 
+from .brightness import ENTITY_DESCRIPTIONS as BRIGHTNESS_DESCRIPTIONS, JaamHABrightnessSensor
 from .home_climate import ENTITY_DESCRIPTIONS as HOME_CLIMATE_DESCRIPTIONS, JaamHAHomeClimateSensor
 from .home_district import ENTITY_DESCRIPTIONS as HOME_DISTRICT_DESCRIPTIONS, JaamHAHomeDistrictSensor
 from .home_district_temp import ENTITY_DESCRIPTIONS as HOME_DISTRICT_TEMP_DESCRIPTIONS, JaamHAHomeDistrictTempSensor
@@ -117,4 +119,15 @@ async def async_setup_entry(
         dynamic_descriptions=DYNAMIC_SENSOR_DESCRIPTIONS,
         should_create=_should_create_sensor,
         should_remove=_should_remove_sensor,
+    )
+
+    # Brightness sensors - only with firmware brightness support
+    async_setup_dynamic_entities(
+        hass,
+        entry,
+        coordinator,
+        async_add_entities,
+        domain="sensor",
+        dynamic_descriptions={desc.key: (desc, JaamHABrightnessSensor) for desc in BRIGHTNESS_DESCRIPTIONS},
+        should_create=is_brightness_entity_supported,
     )

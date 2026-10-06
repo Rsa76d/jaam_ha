@@ -145,6 +145,14 @@
           "microclimate": "Microclimate",
           "combined": "Combined"
         }
+      },
+      "brightness_mode": {
+        "name": "Brightness mode",
+        "state": {
+          "off": "Off",
+          "day_night": "Day/Night",
+          "sensor": "Light sensor"
+        }
       }
     },
     "switch": {
@@ -156,6 +164,15 @@
       },
       "map": {
         "name": "Map"
+      },
+      "brightness_smooth": {
+        "name": "Smooth map brightness"
+      },
+      "display_auto_brightness": {
+        "name": "Display auto brightness"
+      },
+      "display_off_at_night": {
+        "name": "Turn off display at night"
       }
     },
     "sensor": {
@@ -185,11 +202,37 @@
       },
       "light_level": {
         "name": "Light Level"
+      },
+      "brightness_current": {
+        "name": "Current map brightness"
+      },
+      "display_brightness_current": {
+        "name": "Current display brightness"
       }
     },
     "update": {
       "firmware": {
         "name": "Firmware"
+      }
+    },
+    "number": {
+      "brightness_max": {
+        "name": "High brightness"
+      },
+      "brightness_min_day": {
+        "name": "Low brightness (day)"
+      },
+      "brightness_min_night": {
+        "name": "Low brightness (night)"
+      },
+      "light_sensor_sensitivity": {
+        "name": "Light sensor sensitivity"
+      },
+      "display_brightness": {
+        "name": "Display brightness"
+      },
+      "display_brightness_min": {
+        "name": "Display minimum brightness"
       }
     }
   },
