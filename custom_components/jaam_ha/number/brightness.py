@@ -39,7 +39,7 @@ ENTITY_DESCRIPTIONS = (
         native_min_value=0.1,
         native_max_value=30,
         native_step=0.1,
-        mode=NumberMode.BOX,
+        mode=NumberMode.SLIDER,
         entity_category=EntityCategory.CONFIG,
         has_entity_name=True,
     ),
