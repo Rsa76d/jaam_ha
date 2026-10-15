@@ -2,6 +2,14 @@
 
 > **[English version](README.en.md)** | [Українська версія](README.md)
 
+> ## 💡 This fork: map and display brightness, a new Lovelace card
+>
+> This is **not the official version**. It is a `jaam_ha` fork for the JAAM firmware with [improved brightness](https://github.com/Rsa76d/jaam_fusion/tree/lux8-brightness): brightness entities (mode, sliders, display brightness, auto display brightness, current brightness; they appear only with that firmware) and a **Lovelace card** with screenshots and instructions.
+> - Card: [`lovelace-card` branch](https://github.com/Rsa76d/jaam_ha/tree/lovelace-card/card)
+> - Integration code: [`lux5-brightness` branch](https://github.com/Rsa76d/jaam_ha/tree/lux5-brightness)
+> - Ready firmware builds: [jaam_fusion, `lux-firmware` branch](https://github.com/Rsa76d/jaam_fusion/tree/lux-firmware/firmware-lux8)
+> - Discussion: [Issue #101](https://github.com/J-A-A-M/jaam_fusion/issues/101)
+
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]](LICENSE)
