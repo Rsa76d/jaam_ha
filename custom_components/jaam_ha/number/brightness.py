@@ -36,9 +36,9 @@ ENTITY_DESCRIPTIONS = (
         key="light_sensor_sensitivity",
         translation_key="light_sensor_sensitivity",
         icon="mdi:tune-vertical",
-        native_min_value=0.1,
+        native_min_value=0.01,
         native_max_value=30,
-        native_step=0.1,
+        native_step=0.01,
         mode=NumberMode.SLIDER,
         entity_category=EntityCategory.CONFIG,
         has_entity_name=True,
@@ -82,7 +82,7 @@ class JaamHABrightnessNumber(NumberEntity, JaamHAEntity):
     async def async_set_native_value(self, value: float) -> None:
         """Set a new value."""
         if self.entity_description.key == "light_sensor_sensitivity":
-            send: float | int = round(float(value), 1)
+            send: float | int = round(float(value), 2)
         else:
             send = round(value)
         await async_set_brightness_value(self.coordinator, self.entity_description.key, send)
