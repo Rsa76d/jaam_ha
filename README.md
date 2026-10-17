@@ -2,13 +2,16 @@
 
 > [English version](README.en.md) | **[Українська версія](README.md)**
 
+> ## ⚠️ Застереження
+> **Я не розробник JAAM і підтримки проєкту не веду.** Це просто доопрацьована версія. Мої прошивки можуть не оновлюватися. Якщо в моїй прошивці будуть баги, претензій до розробників JAAM бути не повинно. Користуйтеся на власний ризик. Офіційна версія: [J-A-A-M](https://github.com/J-A-A-M).
+
 > ## 💡 Цей форк: яскравість мапи й дисплея, нова картка Lovelace
 >
 > Це **не офіційна версія**, а форк `jaam_ha` для прошивки JAAM з [доопрацьованою яскравістю](https://github.com/Rsa76d/jaam_fusion/tree/lux8-brightness):
 > - 🌗 Сутності яскравості: режим (вимкнено, день/ніч, сенсор, автояскравість), повзунки «велика», «мала день», «мала ніч», чутливість, яскравість дисплея й мінімум, автояскравість дисплея, поточна яскравість. З'являються лише з такою прошивкою.
 > - 🃏 **Картка Lovelace** `jaam-alert-card` зі скріншотами та інструкцією: [гілка `lovelace-card`](https://github.com/Rsa76d/jaam_ha/tree/lovelace-card/card)
 > - 🔧 **Код інтеграції:** [гілка `lux5-brightness`](https://github.com/Rsa76d/jaam_ha/tree/lux5-brightness)
-> - 📥 **Готові прошивки:** [jaam_fusion, гілка `lux-firmware`](https://github.com/Rsa76d/jaam_fusion/tree/lux-firmware/firmware-lux8)
+> - 📥 **Готові прошивки:** [jaam_fusion, гілка `lux-firmware`](https://github.com/Rsa76d/jaam_fusion/tree/lux-firmware/firmware-lux9)
 > - 💬 **Обговорення з розробниками:** [Issue #101](https://github.com/J-A-A-M/jaam_fusion/issues/101)
 
 [![GitHub Release][releases-shield]][releases]
