@@ -11,7 +11,7 @@
 > - 🌗 Сутності яскравості: режим (вимкнено, день/ніч, сенсор, автояскравість), повзунки «велика», «мала день», «мала ніч», чутливість, яскравість дисплея й мінімум, автояскравість дисплея, поточна яскравість. З'являються лише з такою прошивкою.
 > - 🃏 **Картка Lovelace** `jaam-alert-card` зі скріншотами та інструкцією: [гілка `lovelace-card`](https://github.com/Rsa76d/jaam_ha/tree/lovelace-card/card)
 > - 🔧 **Код інтеграції:** [гілка `lux5-brightness`](https://github.com/Rsa76d/jaam_ha/tree/lux5-brightness)
-> - 📥 **Готові прошивки:** [jaam_fusion, гілка `lux-firmware`](https://github.com/Rsa76d/jaam_fusion/tree/lux-firmware/firmware-lux9)
+> - 📥 **Готові прошивки:** [jaam_fusion, гілка `lux-firmware`](https://github.com/Rsa76d/jaam_fusion/tree/lux-firmware/firmware-lux10)
 > - 💬 **Обговорення з розробниками:** [Issue #101](https://github.com/J-A-A-M/jaam_fusion/issues/101)
 
 [![GitHub Release][releases-shield]][releases]
