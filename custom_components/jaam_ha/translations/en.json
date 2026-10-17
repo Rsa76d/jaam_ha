@@ -95,6 +95,17 @@
       },
       "websocket_status": {
         "name": "WebSocket Status"
+      },
+      "battery_charging": {
+        "name": "Battery Charging"
+      },
+      "battery_external_power": {
+        "name": "External Power"
+      }
+    },
+    "button": {
+      "reboot": {
+        "name": "Reboot"
       }
     },
     "event": {
@@ -146,6 +157,15 @@
           "combined": "Combined"
         }
       },
+      "mode": {
+        "name": "Mode",
+        "state": {
+          "alarm_map": "Alarm Map",
+          "weather": "Weather",
+          "radiation": "Radiation",
+          "energy": "Energy"
+        }
+      },
       "brightness_mode": {
         "name": "Brightness mode",
         "state": {
@@ -156,15 +176,53 @@
         }
       }
     },
+    "number": {
+      "sound_volume_day": {
+        "name": "Day Sound Volume"
+      },
+      "sound_volume_night": {
+        "name": "Night Sound Volume"
+      },
+      "brightness_day": {
+        "name": "Day Brightness"
+      },
+      "brightness_night": {
+        "name": "Night Brightness"
+      },
+      "brightness_max": {
+        "name": "High brightness"
+      },
+      "brightness_min_day": {
+        "name": "Low brightness (day)"
+      },
+      "brightness_min_night": {
+        "name": "Low brightness (night)"
+      },
+      "light_sensor_sensitivity": {
+        "name": "Light sensor sensitivity"
+      },
+      "display_brightness": {
+        "name": "Display brightness"
+      },
+      "display_brightness_min": {
+        "name": "Display minimum brightness"
+      }
+    },
     "switch": {
       "night_mode": {
         "name": "Night Brightness Mode"
+      },
+      "night_mode_touch": {
+        "name": "Night Mode"
       },
       "display": {
         "name": "Display"
       },
       "map": {
         "name": "Map"
+      },
+      "sound_enabled": {
+        "name": "Sound"
       },
       "display_auto_brightness": {
         "name": "Display auto brightness"
@@ -176,6 +234,15 @@
     "sensor": {
       "home_district": {
         "name": "Home District"
+      },
+      "battery_percent": {
+        "name": "Battery"
+      },
+      "battery_voltage_mv": {
+        "name": "Battery Voltage"
+      },
+      "battery_runtime_hours": {
+        "name": "Battery Runtime"
       },
       "used_memory": {
         "name": "Used Memory"
@@ -240,26 +307,6 @@
     "update": {
       "firmware": {
         "name": "Firmware"
-      }
-    },
-    "number": {
-      "brightness_max": {
-        "name": "High brightness"
-      },
-      "brightness_min_day": {
-        "name": "Low brightness (day)"
-      },
-      "brightness_min_night": {
-        "name": "Low brightness (night)"
-      },
-      "light_sensor_sensitivity": {
-        "name": "Light sensor sensitivity"
-      },
-      "display_brightness": {
-        "name": "Display brightness"
-      },
-      "display_brightness_min": {
-        "name": "Display minimum brightness"
       }
     }
   },

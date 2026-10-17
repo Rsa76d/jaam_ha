@@ -9,10 +9,14 @@
   "integration_type": "hub",
   "iot_class": "local_push",
   "issue_tracker": "https://github.com/J-A-A-M/jaam_ha/issues",
-  "version": "0.7.0-lux6",
+  "version": "0.9.0-lux1",
   "zeroconf": [
     {
       "type": "_jaam-ws._tcp.local.",
+      "name": "*"
+    },
+    {
+      "type": "_jaam-touch-ws._tcp.local.",
       "name": "*"
     }
   ]

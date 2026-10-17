@@ -51,7 +51,7 @@ ENTITY_DESCRIPTIONS = (
 # broadcasts the corrected values, so HA always shows what the device actually applied.
 
 
-class JaamHABrightnessNumber(NumberEntity, JaamHAEntity):
+class JaamHAMapBrightnessNumber(NumberEntity, JaamHAEntity):
     """Brightness setting number."""
 
     def __init__(
