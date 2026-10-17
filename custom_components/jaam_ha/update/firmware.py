@@ -28,7 +28,7 @@ GITHUB_API_URL = "https://api.github.com/repos/J-A-A-M/jaam_fusion"
 
 # Regex pattern for parsing version strings (e.g., 5.0, 5.0.1, 5.0-b32, 5.0.1-b32, 5.0-b32-s3, 5.0.2-c3)
 # Chip type suffixes (c3, s3, etc.) are matched but ignored during version comparison
-VERSION_PATTERN = re.compile(r"^(\d+)\.(\d+)(?:\.(\d+))?(?:-b(\d+))?(?:-[cs]\d+)?$")
+VERSION_PATTERN = re.compile(r"^(\d+)\.(\d+)(?:\.(\d+))?(?:-b(\d+))?(?:-lux(\d+))?(?:-[cs]\d+)?$")
 
 ENTITY_DESCRIPTIONS = (
     UpdateEntityDescription(
@@ -41,7 +41,7 @@ ENTITY_DESCRIPTIONS = (
 )
 
 
-def parse_version(version: str) -> tuple[int, int, int, int] | None:
+def parse_version(version: str) -> tuple[int, int, int, int, int] | None:
     """Parse version string into comparable tuple.
 
     Chip type suffixes (e.g., -c3, -s3) are ignored during parsing and comparison.
@@ -67,8 +67,14 @@ def parse_version(version: str) -> tuple[int, int, int, int] | None:
     if not match:
         return None
 
-    major, minor, patch, beta = match.groups()
-    return (int(major), int(minor), int(patch) if patch else 0, int(beta) if beta else 0)
+    major, minor, patch, beta, lux = match.groups()
+    return (
+        int(major),
+        int(minor),
+        int(patch) if patch else 0,
+        int(beta) if beta else 0,
+        int(lux) if lux else 0,  # unofficial "-luxN" build number (rsa_lux channel)
+    )
 
 
 def strip_chip_suffix(version: str) -> str:
@@ -194,8 +200,8 @@ class JaamHAFirmwareUpdate(UpdateEntity, JaamHAEntity):
             )
             return latest_version != installed_version
 
-        latest_major, latest_minor, latest_patch, latest_beta = latest_parsed
-        installed_major, installed_minor, installed_patch, installed_beta = installed_parsed
+        latest_major, latest_minor, latest_patch, latest_beta, latest_lux = latest_parsed
+        installed_major, installed_minor, installed_patch, installed_beta, installed_lux = installed_parsed
 
         # Compare major.minor.patch first
         if (latest_major, latest_minor, latest_patch) > (installed_major, installed_minor, installed_patch):
@@ -212,8 +218,10 @@ class JaamHAFirmwareUpdate(UpdateEntity, JaamHAEntity):
         if installed_beta == 0 and latest_beta > 0:
             return False
 
-        # Both beta or both release - compare beta numbers
-        return latest_beta > installed_beta
+        # Both beta or both release - compare beta numbers, then the unofficial lux build number
+        if latest_beta != installed_beta:
+            return latest_beta > installed_beta
+        return latest_lux > installed_lux
 
     @property
     def icon(self) -> str:
@@ -242,6 +250,9 @@ class JaamHAFirmwareUpdate(UpdateEntity, JaamHAEntity):
         Chip suffixes are stripped before constructing the URL.
         """
         version = self.latest_version
+        if version and "-lux" in version:
+            # Unofficial rsa_lux build: no official release page, point to the fork's changelog
+            return "https://github.com/Rsa76d/jaam_fusion/blob/lux-firmware/CHANGELOG-lux.md"
         if version:
             # Strip chip suffix (e.g., -c3, -s3) before constructing GitHub URL
             # GitHub releases use version without chip suffix (e.g., 5.0.1, 5.0.1-b32)
@@ -261,6 +272,9 @@ class JaamHAFirmwareUpdate(UpdateEntity, JaamHAEntity):
         version = self.latest_version
         if not version:
             return None
+        if "-lux" in version:
+            # Unofficial rsa_lux build: not on the official GitHub releases
+            return "Unofficial rsa_lux build. Changes: https://github.com/Rsa76d/jaam_fusion/blob/lux-firmware/CHANGELOG-lux.md"
 
         # Return cached value if available
         if version in self._release_notes_cache:
