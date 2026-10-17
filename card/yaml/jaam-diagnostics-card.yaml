@@ -1,0 +1,81 @@
+# JAAM — діагностика (Mushroom)
+# Потрібно: Mushroom (HACS). Замініть jaam_546ec0c40a24 на свій ID пристрою.
+type: vertical-stack
+cards:
+  - type: custom:mushroom-title-card
+    title: Діагностика JAAM
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-update-card
+        entity: update.jaam_546ec0c40a24_firmware
+        name: Прошивка
+        icon_color: purple
+        show_buttons_control: true
+        fill_container: true
+
+      - type: custom:mushroom-entity-card
+        entity: binary_sensor.jaam_546ec0c40a24_websocket_status
+        name: Статус WebSocket
+        icon_color: green
+        fill_container: true
+
+      - type: custom:mushroom-template-card
+        entity: sensor.jaam_546ec0c40a24_wifi_signal
+        primary: Сигнал Wi-Fi
+        secondary: "{{ states(entity) }} dBm"
+        icon: mdi:wifi
+        icon_color: >
+          {% set v = states(entity) | float(-100) %}
+          {{ 'green' if v > -60 else ('orange' if v > -75 else 'red') }}
+        fill_container: true
+
+      - type: custom:mushroom-template-card
+        entity: sensor.jaam_546ec0c40a24_cpu_temperature
+        primary: Температура CPU
+        secondary: "{{ states(entity) | float(0) | round(1) }} °C"
+        icon: mdi:chip
+        icon_color: >
+          {% set v = states(entity) | float(0) %}
+          {{ 'green' if v < 60 else ('orange' if v < 75 else 'red') }}
+        fill_container: true
+
+      - type: custom:mushroom-template-card
+        entity: sensor.jaam_546ec0c40a24_used_memory
+        primary: Використано пам'яті
+        secondary: "{{ ((states(entity) | float(0)) / 1024) | round(0) | int }} КБ"
+        icon: mdi:memory
+        icon_color: blue
+        fill_container: true
+
+      - type: custom:mushroom-template-card
+        entity: sensor.jaam_546ec0c40a24_uptime
+        primary: Час роботи
+        secondary: >
+          {% set s = states(entity) | int(0) %}
+          {{ (s // 86400) ~ ' д ' if s >= 86400 }}{{ (s % 86400) // 3600 }} год {{ (s % 3600) // 60 }} хв
+        icon: mdi:timer-outline
+        icon_color: cyan
+        fill_container: true
+
+      - type: custom:mushroom-template-card
+        entity: sensor.jaam_546ec0c40a24_websocket_uptime
+        primary: Час роботи WebSocket
+        secondary: >
+          {% set s = states(entity) | int(0) %}
+          {{ (s // 86400) ~ ' д ' if s >= 86400 }}{{ (s % 86400) // 3600 }} год {{ (s % 3600) // 60 }} хв
+        icon: mdi:lan-connect
+        icon_color: teal
+        fill_container: true
+
+      - type: custom:mushroom-template-card
+        entity: sensor.jaam_546ec0c40a24_wifi_uptime
+        primary: Час роботи Wi-Fi
+        secondary: >
+          {% set s = states(entity) | int(0) %}
+          {{ (s // 86400) ~ ' д ' if s >= 86400 }}{{ (s % 86400) // 3600 }} год {{ (s % 3600) // 60 }} хв
+        icon: mdi:router-wireless
+        icon_color: light-blue
+        fill_container: true

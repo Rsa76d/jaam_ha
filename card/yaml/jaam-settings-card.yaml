@@ -1,0 +1,66 @@
+# JAAM — налаштування яскравості (Mushroom)
+# Потрібно: Mushroom (HACS). Замініть jaam_546ec0c40a24 на свій ID пристрою.
+type: vertical-stack
+cards:
+  - type: custom:mushroom-title-card
+    title: Яскравість JAAM
+
+  - type: custom:mushroom-select-card
+    entity: select.jaam_546ec0c40a24_brightness_mode
+    name: Режим яскравості
+    icon_color: amber
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-number-card
+        entity: number.jaam_546ec0c40a24_high_brightness
+        name: Велика яскравість
+        display_mode: slider
+        icon_color: red
+        fill_container: true
+      - type: custom:mushroom-number-card
+        entity: number.jaam_546ec0c40a24_low_brightness_day
+        name: Мала яскравість (день)
+        display_mode: slider
+        icon_color: orange
+        fill_container: true
+      - type: custom:mushroom-number-card
+        entity: number.jaam_546ec0c40a24_low_brightness_night
+        name: Мала яскравість (ніч)
+        display_mode: slider
+        icon_color: indigo
+        fill_container: true
+      - type: custom:mushroom-number-card
+        entity: number.jaam_546ec0c40a24_light_sensor_sensitivity
+        name: Чутливість сенсора
+        display_mode: slider
+        icon_color: green
+        fill_container: true
+      - type: custom:mushroom-number-card
+        entity: number.jaam_546ec0c40a24_display_brightness
+        name: Яскравість дисплея
+        display_mode: slider
+        icon_color: blue
+        fill_container: true
+      - type: custom:mushroom-number-card
+        entity: number.jaam_546ec0c40a24_display_minimum_brightness
+        name: Мінімум дисплея
+        display_mode: slider
+        icon_color: light-blue
+        fill_container: true
+      - type: custom:mushroom-entity-card
+        entity: switch.jaam_546ec0c40a24_display_auto_brightness
+        name: Автояскравість дисплея
+        icon_color: teal
+        tap_action:
+          action: toggle
+        fill_container: true
+      - type: custom:mushroom-entity-card
+        entity: switch.jaam_546ec0c40a24_turn_off_display_at_night
+        name: Вимикати дисплей вночі
+        icon_color: purple
+        tap_action:
+          action: toggle
+        fill_container: true

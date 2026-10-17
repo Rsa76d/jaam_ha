@@ -60,3 +60,15 @@ type: custom:jaam-alert-card
 - Якщо Home Assistant був вимкнений або не мав зв'язку з мапою в момент спрацювання, цього спрацювання в історії не буде.
 
 Після заміни файлу в `/config/www/` змініть у ресурсах Lovelace адресу на `/local/jaam-alert-card-v1.5.js` (або додайте `?v=1.5` для скидання кешу) і оновіть сторінку.
+
+## Картки налаштувань і діагностики (Mushroom, чистий YAML)
+
+Дві готові картки в стилі [Mushroom](https://github.com/piitaya/lovelace-mushroom) (ставиться через HACS):
+
+- [`yaml/jaam-settings-card.yaml`](yaml/jaam-settings-card.yaml) — режим яскравості, повзунки яскравості, чутливість сенсора, перемикачі.
+- [`yaml/jaam-diagnostics-card.yaml`](yaml/jaam-diagnostics-card.yaml) — прошивка, WebSocket, Wi-Fi, температура CPU, пам'ять, час роботи.
+
+Як додати: Редагувати панель → Додати картку → Вручну → вставити вміст файлу → Зберегти.
+Замініть `jaam_546ec0c40a24` на ID вашого пристрою (дивіться у Налаштування → Пристрої → JAAM → сутності).
+
+![Налаштування і діагностика](screenshots/mushroom-settings-diagnostics.jpg)
