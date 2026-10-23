@@ -9,8 +9,9 @@
 >
 > This is **not the official version**. It is a `jaam_ha` fork for the JAAM firmware with [improved brightness](https://github.com/Rsa76d/jaam_fusion/tree/lux8-brightness): brightness entities (mode, sliders, display brightness, auto display brightness, current brightness; they appear only with that firmware) and a **Lovelace card** with screenshots and instructions.
 > - Card: [`lovelace-card` branch](https://github.com/Rsa76d/jaam_ha/tree/lovelace-card/card)
-> - Integration code: [`lux5-brightness` branch](https://github.com/Rsa76d/jaam_ha/tree/lux5-brightness)
-> - Ready firmware builds: [jaam_fusion, `lux-firmware` branch](https://github.com/Rsa76d/jaam_fusion/tree/lux-firmware/firmware-lux11)
+> - Integration code: [`lux5-brightness` branch](https://github.com/Rsa76d/jaam_ha/tree/lux9-brightness)
+> - Ready firmware builds: [jaam_fusion, `lux-firmware` branch](https://github.com/Rsa76d/jaam_fusion/tree/lux-firmware/firmware-lux12)
+> - Alert data: JAAM (<https://jaam.net.ua>).
 > - Discussion: [Issue #101](https://github.com/J-A-A-M/jaam_fusion/issues/101)
 
 [![GitHub Release][releases-shield]][releases]
