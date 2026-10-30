@@ -1,5 +1,5 @@
 /*
- * JAAM Alert Card v1.5
+ * JAAM Alert Card v1.6
  * Lovelace-картка для інтеграції jaam_ha (https://github.com/J-A-A-M/jaam_ha)
  * Показує стан тривоги в домашньому регіоні, рівень (жовтий/червоний)
  * та типи загроз з анімованими SVG-іконками.
@@ -15,12 +15,13 @@
  *   show_status: true           # індикатор WebSocket-з'єднання
  *   show_controls: true         # панель керування (мапа, дисплей, лампа, нічний, режими)
   *   show_climate: true          # рядок клімату кімнати (температура, вологість, тиск з датчика мапи)
- *   tile_hold_minutes: 20       # [v1.5] скільки хвилин плитка загрози лишається активною після спрацювання (з таймером)
+ *   tile_hold_minutes: 20       # [v1.6] скільки хвилин плитка лишається активною ПІСЛЯ відбою сенсора (відлік справа)
+ *                               # на плитці: ліворуч — скільки сенсор був активний (завмирає при відбої), праворуч — скільки минуло після відбою
  *
  * Керування: тап — перемкнути, довге натискання — вікно сутності (яскравість/колір лампи тощо).
  */
 
-const CARD_VERSION = "1.5";
+const CARD_VERSION = "1.6";
 
 // Порядок = пріоритет для головної іконки
 const THREATS = {
@@ -357,8 +358,12 @@ const STYLE = `
   .tile.on { color: var(--jac-c); background: color-mix(in srgb, var(--jac-c) 16%, transparent); font-weight:600; }
   .tile.on svg { opacity:1; }
   /* [v1.5] таймер на плитці загрози: скільки минуло від спрацювання */
-  .tile .tm { font-size:11px; font-weight:600; font-variant-numeric: tabular-nums; min-height:13px; opacity:.9; }
-  .tile:not(.on) .tm { visibility:hidden; }
+  .tile .tms { display:flex; justify-content:space-between; width:100%; padding:0 6px; box-sizing:border-box; min-height:13px; }
+  .tile .tm { font-size:11px; font-weight:600; font-variant-numeric: tabular-nums; opacity:.9; }
+  .tile .tm.tr { opacity:.6; }
+  .tile.off .tm.tl { opacity:.6; }
+  .tile.off .tm.tr { opacity:1; }
+  .tile:not(.on) .tms { visibility:hidden; }
   /* неактивні: без анімації, без кольорових вставок */
   .tile:not(.on):not(.info) svg *, .tile:not(.on):not(.info) svg { animation: none !important; }
 
@@ -577,9 +582,10 @@ class JaamAlertCard extends HTMLElement {
   }
   disconnectedCallback() { clearInterval(this._timer); clearInterval(this._tick1s); clearInterval(this._histTimer); }
 
-  /* [v1.5] Плитка загрози тримається ввімкненою tile_hold_minutes (за замовчуванням 20 хв) від останнього спрацювання
-     сенсора, на ній іде таймер «скільки минуло». Час спрацювання беремо з історії HA, тому після перезавантаження
-     сторінки таймер не збивається. */
+  /* [v1.6] Плитка загрози: ліворуч — скільки сенсор був активний (від спрацювання до відбою, потім завмирає),
+     праворуч — скільки минуло після відбою (до tile_hold_minutes, потім плитка гасне). Повторне спрацювання
+     під час відліку обнуляє обидва таймери. Часи беремо з історії HA, тому після перезавантаження сторінки
+     таймери не збиваються. this._trig[t] — початок активності, this._off[t] — момент відбою (або відсутній). */
   _holdMs() { return Math.max(1, Number(this._config.tile_hold_minutes) || 20) * 60000; }
 
   async _loadHistory() {
@@ -589,20 +595,30 @@ class JaamAlertCard extends HTMLElement {
     this._histBusy = true;
     try {
       const end = new Date();
-      const start = new Date(end.getTime() - this._holdMs() - 60000);
+      // вікно: відлік після відбою + запас, щоб знайти початок тривалої активності
+      const start = new Date(end.getTime() - this._holdMs() - 3 * 3600000);
       const res = await this._hass.callApi("GET",
         `history/period/${start.toISOString()}?filter_entity_id=${ids.join(",")}&end_time=${end.toISOString()}&minimal_response&no_attributes`);
       const trig = this._trig || (this._trig = {});
+      const off = this._off || (this._off = {});
       for (const list of res || []) {
         if (!list || !list.length) continue;
         const id = list[0].entity_id;
         const key = Object.keys(THREATS).find((t) => this._map["home_alert_" + t] === id);
         if (!key) continue;
-        let last = null;
-        list.forEach((it, i) => {
-          if (it.state === "on" && (i === 0 || list[i - 1].state !== "on")) last = Date.parse(it.last_changed || it.last_updated);
-        });
-        if (last && !isNaN(last) && last > (trig[key] || 0)) trig[key] = last;
+        // unavailable/unknown (перезапуск HA тощо) ігноруємо — вони не вважаються відбоєм
+        const rows = list.filter((it) => it.state === "on" || it.state === "off");
+        let runStart = null, offAt = null;
+        for (const it of rows) {
+          const ts = Date.parse(it.last_changed || it.last_updated);
+          if (isNaN(ts)) continue;
+          if (it.state === "on") { if (runStart === null || offAt !== null) { runStart = ts; offAt = null; } }   // нова активність після відбою — все з нуля
+          else if (runStart !== null && offAt === null) offAt = ts;
+        }
+        if (runStart !== null && (!trig[key] || runStart <= trig[key])) {
+          trig[key] = runStart;
+          if (offAt !== null) off[key] = offAt; else delete off[key];
+        }
       }
     } catch (e) { /* історія недоступна - працюємо за поточним станом */ }
     this._histBusy = false;
@@ -620,15 +636,28 @@ class JaamAlertCard extends HTMLElement {
     return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
   }
 
+  /* [v1.6] два таймери плитки: l — активність сенсора, r — час після відбою */
+  _tileTimes(t) {
+    const trig = this._trig || {}, off = this._off || {}, now = Date.now();
+    if (!trig[t]) return { l: "00:00", r: "00:00", off: false };
+    const isOff = !!off[t];
+    const l = this._fmtTm((isOff ? off[t] : now) - trig[t]);
+    const r = isOff ? this._fmtTm(now - off[t]) : "00:00";
+    return { l, r, off: isOff };
+  }
+
   _tickTiles() {
     if (!this._hass || !this._map) return;
     this._refresh();   // плитка могла згаснути
     const root = this.shadowRoot;
     if (!root) return;
-    const trig = this._trig || {};
     root.querySelectorAll(".tile[data-threat]").forEach((el) => {
-      const t = el.dataset.threat, tm = el.querySelector(".tm");
-      if (tm && trig[t] && el.classList.contains("on")) tm.textContent = this._fmtTm(Date.now() - trig[t]);
+      if (!el.classList.contains("on")) return;
+      const t = el.dataset.threat, tl = el.querySelector(".tm.tl"), tr = el.querySelector(".tm.tr");
+      const x = this._tileTimes(t);
+      if (tl) tl.textContent = x.l;
+      if (tr) tr.textContent = x.r;
+      el.classList.toggle("off", x.off);
     });
   }
 
@@ -671,15 +700,22 @@ class JaamAlertCard extends HTMLElement {
     if (!this._map) return { missing: true };
     const red = this._on("home_alert_red"), yellow = this._on("home_alert_yellow"), air = this._on("home_alert_air");
     const active = Object.keys(THREATS).filter((t) => this._on("home_alert_" + t));
-    // [v1.5] плитки: сенсор увімкнений або з останнього спрацювання минуло менше tile_hold_minutes
+    // [v1.6] плитки: сенсор увімкнений, або після відбою минуло менше tile_hold_minutes
     const trig = this._trig || (this._trig = {});
-    for (const t of active) {
-      const s = this._st("home_alert_" + t);
-      const lc = s ? Date.parse(s.last_changed) : NaN;
-      if (!isNaN(lc) && lc > (trig[t] || 0)) trig[t] = lc;
+    const off = this._off || (this._off = {});
+    for (const t of Object.keys(THREATS)) {
+      const e = this._st("home_alert_" + t);
+      if (!e) continue;
+      const lc = Date.parse(e.last_changed);
+      if (e.state === "on") {
+        if (off[t] && (isNaN(lc) || lc > off[t])) { trig[t] = isNaN(lc) ? Date.now() : lc; delete off[t]; }   // повторне спрацювання: все з нуля
+        else if (!trig[t]) trig[t] = isNaN(lc) ? Date.now() : lc;
+      } else if (e.state === "off" && trig[t] && !off[t]) {
+        off[t] = Math.max(trig[t], isNaN(lc) ? Date.now() : lc);   // відбій: ліва мітка завмирає, іде права
+      }
     }
     const now = Date.now(), hold = this._holdMs();
-    const tiles = Object.keys(THREATS).filter((t) => active.includes(t) || (trig[t] && now - trig[t] < hold));
+    const tiles = Object.keys(THREATS).filter((t) => active.includes(t) || (trig[t] && off[t] && now - off[t] < hold));
     const hasLevels = red !== null || yellow !== null;
 
     let level, levelKey;
@@ -744,8 +780,8 @@ class JaamAlertCard extends HTMLElement {
     // Усі загрози завжди на сітці: сірі неактивні, кольорові з анімацією — активні
     const tiles = Object.keys(THREATS).map((t) => {
       const on = st.tiles.includes(t);
-      const tm = on && this._trig && this._trig[t] ? this._fmtTm(Date.now() - this._trig[t]) : "";
-      return `<div class="tile ${on ? "on" : ""}" data-threat="${t}">${ICONS[t]}<span>${THREATS[t].label}</span><span class="tm">${tm || "00:00"}</span></div>`;
+      const x = this._tileTimes(t);
+      return `<div class="tile ${on ? "on" : ""}${on && x.off ? " off" : ""}" data-threat="${t}">${ICONS[t]}<span>${THREATS[t].label}</span><span class="tms"><span class="tm tl" title="Скільки сенсор був активний">${x.l}</span><span class="tm tr" title="Скільки минуло після відбою">${x.r}</span></span></div>`;
     });
     // [v1.3] Нижній ряд: Радіація | Розвідувальні БпЛА | Енергосистема
     if (st.radiation || st.energy) {
